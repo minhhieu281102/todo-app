@@ -1,0 +1,13 @@
+.todoList {
+  padding: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.todoListContainer {
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  max-width: 40rem;
+  padding: 2rem;
+}
