@@ -5,6 +5,7 @@ import TaskList from '../TaskList'
 import styles from './todoList.module.scss'
 export default function TodoList() {
   const [todos, setToDos] = useState<Todo[]>([])
+  const [currentTodo, setCurrentTodo] = useState<Todo | null>(null)
 
   const doneTodos = todos.filter((todo) => todo.done)
   const notDoneTodos = todos.filter((todo) => !todo.done)
@@ -29,12 +30,64 @@ export default function TodoList() {
     })
   }
 
+  const startEditTodo = (id: string) => {
+    const findedTodo = todos.find((todo) => todo.id === id)
+    if (findedTodo) {
+      setCurrentTodo(findedTodo)
+    }
+  }
+
+  const editTodo = (name: string) => {
+    setCurrentTodo((prev) => {
+      if (prev) return { ...prev, name }
+      return prev
+    })
+  }
+
+  const finishEditTodo = () => {
+    setToDos((prev) => {
+      return prev.map((todo) => {
+        if (todo.id === (currentTodo as Todo).id) {
+          return currentTodo as Todo
+        }
+        return todo
+      })
+    })
+    setCurrentTodo(null)
+  }
+
+  const deleteTodo = (id: string) => {
+    if (currentTodo) {
+      setCurrentTodo(null)
+    }
+    setToDos((prev) => {
+      const findedIndexTodo = prev.findIndex((todo) => todo.id === id)
+      if (findedIndexTodo > -1) {
+        const result = [...prev]
+        result.splice(findedIndexTodo, 1)
+        return result
+      }
+      return prev
+    })
+  }
+
   return (
     <div className={styles.todoList}>
       <div className={styles.todoListContainer}>
-        <TaskInput addToDo={addToDo} />
-        <TaskList todos={notDoneTodos} handleDoneTodo={handleDoneTodo} />
-        <TaskList doneTaskList todos={doneTodos} handleDoneTodo={handleDoneTodo} />
+        <TaskInput addToDo={addToDo} currentTodo={currentTodo} editTodo={editTodo} finishEditTodo={finishEditTodo} />
+        <TaskList
+          todos={notDoneTodos}
+          handleDoneTodo={handleDoneTodo}
+          startEditTodo={startEditTodo}
+          deleteTodo={deleteTodo}
+        />
+        <TaskList
+          doneTaskList
+          todos={doneTodos}
+          handleDoneTodo={handleDoneTodo}
+          startEditTodo={startEditTodo}
+          deleteTodo={deleteTodo}
+        />
       </div>
     </div>
   )
